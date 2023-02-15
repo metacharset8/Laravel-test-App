@@ -12,6 +12,28 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function login(Request $request)
+    {
+        $data = $request->validate([
+            "email" => ["required", "email", "string"],
+            "password" => ["required"]
+        ]);
+
+        if(auth("web")->attempt($data))
+        {
+            return redirect(route("home"));
+        }
+
+        return redirect(route("login"))->withErrors(["email" => "Пользователь не найден, либо данные введены неправильно"]);
+    }
+
+    public function logout()
+    {
+        auth("web")->logout();
+
+        return redirect(route("home"));
+    }
+
     public function showRegisterForm()
     {
         return view('auth.register');
