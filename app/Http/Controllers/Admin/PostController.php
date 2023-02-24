@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PostFormRequest;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -14,7 +16,10 @@ class PostController extends Controller
      */
     public function index()
     {
-        return view("admin.posts.index");
+        $posts = Post::orderBy("created_at", "DESC")->paginate(3);
+        return view("admin.posts.index", [
+            "posts" => $posts,
+        ]);
     }
 
     /**
@@ -24,7 +29,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view("admin.posts.create", []);
     }
 
     /**
@@ -33,20 +38,11 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostFormRequest $request)
     {
-        //
-    }
+        $post =Post::create($request->validated());
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        return redirect(route("admin.posts.index"));
     }
 
     /**
@@ -80,6 +76,8 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Post::destroy($id);
+
+        return redirect(route("admin.posts.index"));
     }
 }
